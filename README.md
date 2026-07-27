@@ -4,19 +4,9 @@
 <!-- Organization Logo -->
 <div align="center" style="display: flex; align-items: center; justify-content: center; gap: 16px;">
   <img alt="AOSSIE" src="public/aossie-logo.svg" width="175">
-  <img src="public/todo-project-logo.svg" width="175" />
 </div>
 
 &nbsp;
-
-<!-- Organization Name -->
-<div align="center">
-
-[![Static Badge](https://img.shields.io/badge/aossie.org/TODO-228B22?style=for-the-badge&labelColor=FFC517)](https://TODO.aossie.org/)
-
-<!-- Correct deployed url to be added -->
-
-</div>
 
 <!-- Organization/Project Social Handles -->
 <p align="center">
@@ -41,251 +31,201 @@
   <img src="https://img.shields.io/youtube/channel/subscribers/UCKVVLbawY7Gej_3o2WKsoiA?style=flat&logo=youtube&logoColor=white%20&logoSize=auto&labelColor=FF0000&color=FF0000" alt="Youtube Badge"></a>
 </p>
 
-
-<p align="center">
-  <a href="https://scorecard.dev/viewer/?uri=github.com/AOSSIE-Org/{repo}">
-    <img src="https://api.scorecard.dev/projects/github.com/AOSSIE-Org/{repo}/badge" alt="OpenSSF Scorecard"/>
-  </a>
-  &nbsp;&nbsp;
-  <a href="./BestPracticesChecklist.md">
-    <img src="https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2FAOSSIE-Org%2Frepo%2Fmain%2Fchecklist-status.json&query=%24.percent&suffix=%25&label=Best%20Practices&logo=openssf" alt="Best Practices"/>
-  </a>
-  &nbsp;&nbsp;
-  <a href="https://github.com/gitleaks/gitleaks">
-    <img src="https://img.shields.io/badge/protected%20by-gitleaks-blue" alt="Protected by Gitleaks"/>
-  </a>
-</p>
-
 ---
 
 <div align="center">
-<h1>TODO: Project Name</h1>
+<h1>🛡️ AOSSIE Admin Repository (Safe-Settings Policy-as-Code)</h1>
 </div>
 
-[TODO](https://TODO.stability.nexus/) is a ... TODO: Project Description.
+The **`admin`** repository centrally manages and enforces repository policies, branch protection rules, issue labels, team access permissions, custom properties, rulesets, and environments across all public repositories in the **[AOSSIE](https://github.com/AOSSIE-Org)** organization.
+
+> [!NOTE]
+> This repository strictly adheres to the official **[GitHub Safe-Settings](https://github.com/github-community-projects/safe-settings)** specification (`main-enterprise` branch), utilizing standard GitHub Actions workflows ([docs/github-action.md](https://github.com/github-community-projects/safe-settings/blob/main-enterprise/docs/github-action.md)) for policy evaluation, dry-run PR checks, and scheduled drift prevention.
 
 ---
 
-## 🚀 Features
+## 🚀 Key Features & Capabilities
 
-TODO: List your main features here:
-
-- **Feature 1**: Description
-- **Feature 2**: Description
-- **Feature 3**: Description
-- **Feature 4**: Description
-
----
-
-## 💻 Tech Stack
-
-TODO: Update based on your project
-
-### Frontend
-- React / Next.js / Flutter / React Native
-- TypeScript
-- TailwindCSS
-
-### Backend
-- Flask / FastAPI / Node.js / Supabase
-- Database: PostgreSQL / SQLite / MongoDB
-
-### AI/ML (if applicable)
-- LangChain / LangGraph / LlamaIndex
-- Google Gemini / OpenAI / Anthropic Claude
-- Vector Database: Weaviate / Pinecone / Chroma
-- RAG / Prompt Engineering / Agent Frameworks
-
-### Blockchain (if applicable)
-- Solidity / solana / cardano / ergo Smart Contracts
-- Hardhat / Truffle / foundry
-- Web3.js / Ethers.js / Wagmi
-- OpenZeppelin / alchemy / Infura
+- **Centralized Policy-as-Code**: Store and manage all organization settings in Git-tracked YAML configuration files under `.github/`.
+- **Three-Tier Precedence Hierarchy**: Precedence order `Repository > Sub-Organization > Organization` allows domain-specific customization while enforcing global compliance.
+- **Dry-Run PR Validation (Nop Mode)**: When a PR is opened in `admin`, safe-settings runs in dry-run mode to evaluate and validate proposed policy changes before merging.
+- **Scheduled Drift Prevention**: Automated GitHub Actions (`.github/workflows/safe-settings-sync.yml`) run on a 4-hour schedule to prevent manual configuration drift in GitHub.
+- **Restricted Scope Protection**: Configured via `deployment-settings.yml` (`restrictedRepos`) to safeguard core administrative repositories (`admin`, `.github`, `safe-settings`) from unintended bot operations.
+- **Fine-Grained Glob Scoping**: Supports `include` and `exclude` glob patterns for scoping teams, labels, collaborators, and repository lists.
+- **External Status Checks Preservation**: Supports `{{EXTERNALLY_DEFINED}}` token under status checks to allow external CI checks configured via the GitHub UI.
 
 ---
 
-## ✅ Project Checklist
+## 📊 Visual Architecture & System Flows
 
-TODO: Complete applicable items based on your project type
+### Configuration Precedence Hierarchy
 
-- [ ] **The protocol** (if applicable):
-   - [ ] has been described and formally specified in a paper.
-   - [ ] has had its main properties mathematically proven.
-   - [ ] has been formally verified.
-- [ ] **The smart contracts** (if applicable):
-   - [ ] were thoroughly reviewed by at least two knights of The Stable Order.
-   - [ ] were deployed to: [Add deployment details]
-- [ ] **The mobile app** (if applicable):
-   - [ ] has an _About_ page containing the Stability Nexus's logo and pointing to the social media accounts of the Stability Nexus.
-   - [ ] is available for download as a release in this repo.
-   - [ ] is available in the relevant app stores.
-- [ ] **The AI/ML components** (if applicable):
-   - [ ] LLM/model selection and configuration are documented.
-   - [ ] Prompts and system instructions are version-controlled.
-   - [ ] Content safety and moderation mechanisms are implemented.
-   - [ ] API keys and rate limits are properly managed.
-
----
-
-## 🔗 Repository Links
-
-TODO: Update with your repository structure
-
-1. [Main Repository](https://github.com/AOSSIE-Org/TODO)
-2. [Frontend](https://github.com/AOSSIE-Org/TODO/tree/main/frontend) (if separate)
-3. [Backend](https://github.com/AOSSIE-Org/TODO/tree/main/backend) (if separate)
-
----
-
-## 🏗️ Architecture Diagram
-
-TODO: Add your system architecture diagram here
-
-```
-[Architecture Diagram Placeholder]
+```mermaid
+graph TD
+    A[Organization Defaults<br/>.github/settings.yml] --> B[Sub-Organization Policies<br/>.github/suborgs/*.yml]
+    B --> C[Repository Overrides<br/>.github/repos/*.yml]
+    
+    style A fill:#e1f5fe,stroke:#01579b,stroke-width:2px,color:#000
+    style B fill:#f3e5f5,stroke:#4a148c,stroke-width:2px,color:#000
+    style C fill:#e8f5e8,stroke:#1b5e20,stroke-width:2px,color:#000
 ```
 
-You can create architecture diagrams using:
-- [Draw.io](https://draw.io)
-- [Excalidraw](https://excalidraw.com)
-- [Lucidchart](https://lucidchart.com)
-- [Mermaid](https://mermaid.js.org) (for code-based diagrams)
+**Precedence Order**: `Repository > Sub-Organization > Organization`
 
-Example structure to include:
-- Frontend components
-- Backend services
-- Database architecture
-- External APIs/services
-- Data flow between components
+### System Request & Processing Flow
+
+```mermaid
+sequenceDiagram
+    participant GH as GitHub Organization
+    participant SS as Safe-Settings Engine (GHA)
+    participant AR as Admin Repo (.github/)
+    participant TR as Target Repositories
+    
+    Note over GH,TR: Event-Driven & Scheduled Processing
+    
+    GH->>+SS: Trigger Event (Push, Cron, PR, Repo Created)
+    SS->>+AR: Fetch Configuration Files
+    AR-->>-SS: Return settings.yml, suborgs/*.yml, repos/*.yml
+    
+    SS->>SS: Merge Hierarchy (Org → Suborg → Repo)
+    SS->>SS: Compare Config with Active GitHub Settings
+    
+    alt Active Sync (Push / Cron / Repo Created)
+        SS->>+TR: Apply Settings (Branch Protection, Labels, Teams, Rulesets)
+        TR-->>-SS: Confirm Applied Changes
+        SS->>GH: Update Check Run (Success)
+    else PR Validation (Dry-Run Mode)
+        SS->>SS: Run Dry-Run (Nop Mode) & Custom Validators
+        SS->>GH: Update PR Check Run + Dry-Run Summary Comment
+    end
+    
+    SS-->>-GH: Processing Complete
+```
 
 ---
 
-## 🔄 User Flow
-
-TODO: Add user flow diagrams showing how users interact with your application
+## 📁 Repository Directory Structure
 
 ```
-[User Flow Diagram Placeholder]
+admin/
+├── deployment-settings.yml           # Defines restrictedRepos (admin, .github, safe-settings)
+├── .coderabbit.yaml                  # CodeRabbit AI code review configuration for policy repo
+├── .github/
+│   ├── settings.yml                  # Organization-wide settings (default branch protection, labels, teams)
+│   ├── suborgs/                      # Sub-organization policies (grouped by domain)
+│   │   ├── ai-agentic-tools.yml
+│   │   ├── blockchain-web3.yml
+│   │   ├── web-frontend.yml
+│   │   ├── education-learning.yml
+│   │   ├── mobile-apps.yml
+│   │   └── core-infra.yml
+│   ├── repos/                        # Repository-specific override files
+│   │   └── admin.yml
+│   ├── workflows/
+│   │   └── safe-settings-sync.yml    # GitHub Actions workflow for scheduled full-sync
+│   └── dependabot.yml                # Dependabot configuration (monitoring github-actions)
+├── public/
+│   └── aossie-logo.svg
+└── README.md                         # Official Admin Policy README
 ```
-
-### Key User Journeys
-
-TODO: Document main user flows:
-
-1. **User Journey 1**: Description
-   - Step 1
-   - Step 2
-   - Step 3
-
-2. **User Journey 2**: Description
-   - Step 1
-   - Step 2
-   - Step 3
-
-3. **User Journey 3**: Description
-   - Step 1
-   - Step 2
-   - Step 3
 
 ---
 
-## �🍀 Getting Started
+## 🏛️ Sub-Organization Domain Breakdown
 
-### Prerequisites
+All 100+ public repositories in **AOSSIE-Org** are grouped into 6 sub-organization policy categories:
 
-TODO: List what developers need installed
-
-- Node.js 18+ / Python 3.9+ / Flutter SDK
-- npm / yarn / pnpm
-- [Any specific tools or accounts needed]
-
-### Installation
-
-TODO: Provide detailed setup instructions
-
-#### 1. Clone the Repository
-
-```bash
-git clone https://github.com/AOSSIE-Org/TODO.git
-cd TODO
-```
-
-#### 2. Install Dependencies
-
-```bash
-npm install
-# or
-yarn install
-# or
-pnpm install
-```
-
-#### 3. Configure Environment Variables(.env.example)
-
-Create a `.env` file in the root directory:
-
-```env
-# Add your environment variables here
-API_KEY=your_api_key
-DATABASE_URL=your_database_url
-```
-
-#### 4. Run the Development Server
-
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-```
-
-#### 5. Open your Browser
-
-Navigate to [http://localhost:3000](http://localhost:3000) to see the application.
-
-For detailed setup instructions, please refer to our [Installation Guide](./docs/INSTALL_GUIDE.md) (if you have one).
+| Sub-Org Domain | Description | Key Managed Repositories |
+| :--- | :--- | :--- |
+| **`ai-agentic-tools`** | AI agents, LLMs, Discord bots, PR analyzers, and automated assistants | `SkillBot`, `PullRequestDashboard`, `Skills`, `OpenVerifiableLLM`, `CodingAgent`, `Gitcord`, `EduAid`, `DebateAI` |
+| **`blockchain-web3`** | Decentralized apps, smart contracts, and Web3 dashboards | `Djed-Solidity-WebDashboard`, `IndexedDB-Import-Export` |
+| **`web-frontend`** | Web applications, dashboards, frontend components, and social widgets | `OrgExplorer`, `SocialShareButton`, `SupportUsButton`, `Website`, `Resonate-Website`, `PictoPy-Website` |
+| **`education-learning`** | Educational tools, Rust ML bindings, knowledge bases | `Social-Street-Smart`, `SciKitLearn-Rust`, `Info`, `LibrEd` |
+| **`mobile-apps`** | Android, Flutter, iOS, and cross-platform mobile apps | `CarbonFootprint-Mobile`, `Starcross-Android`, `Agora-Android`, `Agora-iOS`, `Resonate`, `Monumento`, `PictoPy` |
+| **`core-infra`** | Core infrastructure, template repositories, blogs, and org tools | `admin`, `Template-Repo`, `.github`, `AOSSIE-Blogs`, `ContributorAutomation`, `Scavenger`, `Skeptik` |
 
 ---
 
-## 📱 App Screenshots
+## ⚙️ Configuration Specification Guide
 
-TODO: Add screenshots showcasing your application
+### 1. Organization Defaults (`.github/settings.yml`)
+Applies globally to all repositories unless overridden by a suborg or repo file:
+```yaml
+repository:
+  has_issues: true
+  has_projects: true
+  allow_squash_merge: true
+  delete_branch_on_merge: true
 
-|  |  |  |
-|---|---|---|
-| Screenshot 1 | Screenshot 2 | Screenshot 3 |
+branches:
+  - name: main
+    protection:
+      required_pull_request_reviews:
+        required_approving_review_count: 1
+        dismiss_stale_reviews: true
+      required_status_checks:
+        strict: true
+        contexts: []
+      required_conversation_resolution: true
+
+labels:
+  - name: "bug"
+    color: "d73a4a"
+  - name: "gsoc"
+    color: "f9d0c4"
+
+teams:
+  - name: admins
+    permission: admin
+  - name: maintainers
+    permission: push
+```
+
+### 2. Sub-Organization Policies (`.github/suborgs/*.yml`)
+Defines policies for a collection of repositories specified in `suborgrepos` (supports glob patterns like `test*`):
+```yaml
+suborgrepos:
+  - "SkillBot"
+  - "PullRequestDashboard"
+  - "Skills"
+
+repository:
+  has_issues: true
+```
+
+### 3. Repository Overrides (`.github/repos/<repo-name>.yml`)
+Applies specific overrides for a single repository (e.g. `admin.yml` enforcing strict 2-reviewer approvals):
+```yaml
+branches:
+  - name: main
+    protection:
+      required_pull_request_reviews:
+        required_approving_review_count: 2
+        require_code_owner_reviews: true
+      enforce_admins: true
+```
+
+### 4. Scope Restrictions (`deployment-settings.yml`)
+Controls which repositories safe-settings can manage or exclude:
+```yaml
+restrictedRepos:
+  - admin
+  - .github
+  - safe-settings
+```
 
 ---
 
-## 🙌 Contributing
+## 🛠️ Policy Change Workflow
 
-⭐ Don't forget to star this repository if you find it useful! ⭐
-
-Thank you for considering contributing to this project! Contributions are highly appreciated and welcomed. To ensure smooth collaboration, please refer to our [Contribution Guidelines](./CONTRIBUTING.md).
-
----
-
-## ✨ Maintainers
-
-TODO: Add maintainer information
-
-- [Maintainer Name](https://github.com/username)
-- [Maintainer Name](https://github.com/username)
+1. Create a branch and modify policy files in `.github/settings.yml`, `.github/suborgs/`, or `.github/repos/`.
+2. Open a Pull Request. Safe-settings automatically runs in **dry-run mode** (`nop` mode) to evaluate proposed changes and posts a validation report.
+3. Upon approval and merge to `main`, the `.github/workflows/safe-settings-sync.yml` workflow triggers and applies the settings live across target repositories.
 
 ---
 
 ## 📍 License
 
-This project is licensed under the GNU General Public License v3.0.
-See the [LICENSE](LICENSE) file for details.
+This project is licensed under the **GNU General Public License v3.0**. See the [LICENSE](LICENSE) file for details.
 
----
-
-## 💪 Thanks To All Contributors
-
-Thanks a lot for spending your time helping TODO grow. Keep rocking 🥂
-
-[![Contributors](https://contrib.rocks/image?repo=AOSSIE-Org/TODO)](https://github.com/AOSSIE-Org/TODO/graphs/contributors)
-
-© 2025 AOSSIE 
+© 2026 **AOSSIE**
