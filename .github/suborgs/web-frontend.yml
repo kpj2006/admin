@@ -1,0 +1,24 @@
+# Sub-Organization Policy: web-frontend
+# Target repositories count: 13
+
+suborgrepos:
+  - "CrowdAlert-Web"
+  - "Agora-Web"
+  - "Agora-web-frontend"
+  - "OpenPeerChat-react-native"
+  - "social-street-smart-api"
+  - "Resonate-Website"
+  - "Website"
+  - "SocialShareButton"
+  - "OrgExplorer"
+  - "SupportUsButton"
+  - "PictoPy-Website"
+  - "WebSift"
+  - "Zplit-Website"
+
+branches:
+  - name: main
+    protection:
+      required_pull_request_reviews:
+        required_approving_review_count: 1
+        dismiss_stale_reviews: true

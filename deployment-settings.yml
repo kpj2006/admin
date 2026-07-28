@@ -1,0 +1,22 @@
+# Runtime Deployment Settings for Safe-Settings
+restrictedRepos:
+  - admin
+  - .github
+  - safe-settings
+
+configvalidators:
+  - plugin: collaborators
+    error: "Admin role cannot be assigned to individual collaborators"
+    script: |
+      return baseconfig.permission != 'admin'
+
+overridevalidators:
+  - plugin: branches
+    error: "Branch protection required_approving_review_count cannot be overridden to a lower value"
+    script: |
+      const baseCount = baseconfig?.protection?.required_pull_request_reviews?.required_approving_review_count
+      const overrideCount = overrideconfig?.protection?.required_pull_request_reviews?.required_approving_review_count
+      if (baseCount && overrideCount) {
+        return overrideCount >= baseCount
+      }
+      return true

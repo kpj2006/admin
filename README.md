@@ -126,14 +126,14 @@ admin/
 │   └── dependabot.yml                # Dependabot configuration (monitoring github-actions)
 ├── public/
 │   └── aossie-logo.svg
-└── README.md                         # Official Admin Policy README
+└── README.md                       
 ```
 
 ---
 
 ## 🏛️ Sub-Organization Domain Breakdown
 
-All 100+ public repositories in **AOSSIE-Org** are grouped into 6 sub-organization policy categories:
+All public repositories in **AOSSIE-Org** are grouped into 6 sub-organization policy categories:
 
 | Sub-Org Domain | Description | Key Managed Repositories |
 | :--- | :--- | :--- |

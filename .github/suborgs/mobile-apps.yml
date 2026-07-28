@@ -1,0 +1,26 @@
+# Sub-Organization Policy: mobile-apps
+# Target repositories count: 15
+
+suborgrepos:
+  - "CarbonFootprint-Mobile"
+  - "CrowdAlert-Mobile"
+  - "Starcross-Android"
+  - "Slagora"
+  - "Agora-Android"
+  - "MindTheWord-Mobile"
+  - "Agora-iOS"
+  - "Resonate"
+  - "Monumento"
+  - "OpenPeerChat-flutter"
+  - "Resonate-Backend"
+  - "PictoPy"
+  - "Zplit"
+  - "Template-Repo-Flutter"
+  - "CarbonTracker-WatchCompanionApp"
+
+branches:
+  - name: main
+    protection:
+      required_pull_request_reviews:
+        required_approving_review_count: 1
+        dismiss_stale_reviews: true

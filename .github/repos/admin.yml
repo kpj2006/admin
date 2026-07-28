@@ -1,0 +1,20 @@
+# Repository-Specific Settings: admin
+# Policy-as-code root repository
+
+repository:
+  description: "Centralized policy-as-code and admin settings repository for AOSSIE Organization"
+  has_issues: true
+  has_projects: true
+  delete_branch_on_merge: true
+
+branches:
+  - name: main
+    protection:
+      required_pull_request_reviews:
+        required_approving_review_count: 2
+        dismiss_stale_reviews: true
+        require_code_owner_reviews: true
+      required_status_checks:
+        strict: true
+      enforce_admins: true
+      required_conversation_resolution: true

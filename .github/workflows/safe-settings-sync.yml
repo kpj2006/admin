@@ -1,0 +1,62 @@
+name: Safe Settings Sync
+
+on:
+  schedule:
+    - cron: "0 */4 * * *"
+  workflow_dispatch: {}
+  push:
+    branches:
+      - main
+    paths:
+      - '.github/settings.yml'
+      - '.github/suborgs/**'
+      - '.github/repos/**'
+      - 'deployment-settings.yml'
+
+jobs:
+  safeSettingsSync:
+    runs-on: ubuntu-latest
+    env:
+      # Tag of safe-settings to run
+      SAFE_SETTINGS_VERSION: 2.1.21
+
+      # Directory where safe-settings code will be fetched
+      SAFE_SETTINGS_CODE_DIR: ${{ github.workspace }}/.safe-settings-code
+
+    steps:
+      # 1. Self-checkout of 'admin' repo for access to safe-settings config:
+      - name: Checkout admin repo
+        uses: actions/checkout@v4
+
+      # 2. Checkout safe-settings tool
+      - name: Checkout safe-settings
+        uses: actions/checkout@v4
+        with:
+          repository: github-community-projects/safe-settings
+          ref: ${{ env.SAFE_SETTINGS_VERSION }}
+          path: ${{ env.SAFE_SETTINGS_CODE_DIR }}
+
+      # 3. Setup Node.js
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      # 4. Install safe-settings dependencies
+      - name: Install dependencies
+        run: npm ci || npm install
+        working-directory: ${{ env.SAFE_SETTINGS_CODE_DIR }}
+
+      # 5. Run full sync across AOSSIE organization
+      - name: Run safe-settings full sync
+        run: npm run full-sync
+        working-directory: ${{ env.SAFE_SETTINGS_CODE_DIR }}
+        env:
+          GH_ORG: ${{ vars.SAFE_SETTINGS_GH_ORG || 'AOSSIE-Org' }}
+          APP_ID: ${{ vars.SAFE_SETTINGS_APP_ID }}
+          PRIVATE_KEY: ${{ secrets.SAFE_SETTINGS_PRIVATE_KEY }}
+          GITHUB_CLIENT_ID: ${{ vars.SAFE_SETTINGS_GITHUB_CLIENT_ID }}
+          GITHUB_CLIENT_SECRET: ${{ secrets.SAFE_SETTINGS_GITHUB_CLIENT_SECRET }}
+          ADMIN_REPO: admin
+          CONFIG_PATH: .github
+          DEPLOYMENT_CONFIG_FILE: ${{ github.workspace }}/deployment-settings.yml
